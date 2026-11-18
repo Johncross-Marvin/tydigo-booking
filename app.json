@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "TYDIGO",
+    "slug": "tydigo-booking",
+    "scheme": "tydigo-booking",
+    "plugins": ["expo-router", "expo-secure-store", "expo-font", "expo-document-picker"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/brand/Tydigo_Logo_Icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tydigo.booking"
+    },
+    "android": {
+      "package": "com.tydigo.booking",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/brand/Tydigo_Logo_Icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

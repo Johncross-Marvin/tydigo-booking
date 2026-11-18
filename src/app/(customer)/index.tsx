@@ -1,0 +1,10 @@
+import { router, Stack } from 'expo-router';
+import { useAuth } from '../../auth/provider';
+import { Button, Card, Copy, Page } from '../../components/ui';
+const content={
+household:{title:'Less waste. More living.',intro:'Simple collection for your home.',section:'Your next pickup',empty:'Your scheduled household collections will appear in your bookings.'},
+estate:{title:'A cleaner community.',intro:'Coordinate collection across your estate.',section:'Estate collections',empty:'Manage your collection locations and scheduled estate services.'},
+business:{title:'Keep business moving.',intro:'Waste collection that fits your operations.',section:'Business collections',empty:'Track premises collections, service history and payment records.'}
+};
+export default function Dashboard(){const {state}=useAuth();const a=state.account!;const c=content[a.account_type];return <Page><Stack.Screen options={{title:a.account_type.charAt(0).toUpperCase()+a.account_type.slice(1)}}/><Copy>Tap. Sort. Picked.</Copy><Copy title>{c.title}</Copy><Copy>{c.intro}</Copy>{a.verification_status!=='approved'&&<Card><Copy title>Complete your verification</Copy><Copy>Status: {a.verification_status.replaceAll('_',' ')}. Your workspace is available. Booking transactions require approval.</Copy><Button label="Open verification centre" onPress={()=>router.push('/verification')}/></Card>}<Card><Copy title>TYDIGO Drive</Copy><Copy>Waste collection and transport to an approved destination.</Copy><Button label="Book waste collection" onPress={()=>router.push({pathname:'/booking',params:{service:'drive'}})}/></Card><Card><Copy title>TYDIGO Send</Copy><Copy>Arrange collection of eligible, separated recyclable materials.</Copy><Button label="Send separated materials" onPress={()=>router.push({pathname:'/booking',params:{service:'send'}})}/></Card><Card><Copy title>{c.section}</Copy><Copy>{c.empty}</Copy><Button label="View bookings" onPress={()=>router.push('/history')}/></Card><Button label="Profile & account" onPress={()=>router.push('/profile')}/><Button label="Help & support" onPress={()=>router.push('/support')}/></Page>;}
+

@@ -1,0 +1,12 @@
+import React from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, TextInputProps, View, useColorScheme } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+export function usePalette() { const dark=useColorScheme()==='dark'; return {bg:dark?'#0C1D20':'#F9FAFB',card:dark?'#153034':'#FFFFFF',text:dark?'#F9FAFB':'#0B2545',muted:dark?'#B8C6CC':'#667085',border:dark?'#315052':'#DCE6E3',green:'#16A34A'}; }
+export function Page({children}:React.PropsWithChildren) { const c=usePalette(), safe=useSafeAreaInsets(); return <ScrollView keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="automatic" style={{flex:1,backgroundColor:c.bg}} contentContainerStyle={{padding:24,paddingBottom:Math.max(safe.bottom,24)+32,gap:20,width:'100%',maxWidth:720,alignSelf:'center'}}>{children}</ScrollView>; }
+export function Copy({children,title=false}:React.PropsWithChildren<{title?:boolean}>) { const c=usePalette(); return <Text selectable style={{color:title?c.text:c.muted,fontFamily:title?'Inter_700Bold':'Inter_400Regular',fontSize:title?27:16,lineHeight:title?35:25}}>{children}</Text>; }
+export function Card({children}:React.PropsWithChildren) { const c=usePalette(); return <View style={{padding:22,borderRadius:24,backgroundColor:c.card,borderWidth:1,borderColor:c.border,gap:12}}>{children}</View>; }
+export function Button({label,onPress,disabled=false}:{label:string;onPress:()=>void;disabled?:boolean}) { return <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled}} disabled={disabled} onPress={onPress} style={{opacity:disabled?0.5:1}}><LinearGradient colors={['#16A34A','#0F766E']} style={{minHeight:52,borderRadius:16,padding:15,justifyContent:'center'}}><Text style={{color:'#FFFFFF',fontFamily:'Inter_700Bold',fontSize:16,textAlign:'center'}}>{label}</Text></LinearGradient></Pressable>; }
+export function Field({label,...props}:TextInputProps & {label:string}) {const c=usePalette();return <View style={{gap:8}}><Copy>{label}</Copy><TextInput accessibilityLabel={label} placeholderTextColor={c.muted} {...props} style={{borderColor:c.border,borderWidth:1,borderRadius:14,padding:15,color:c.text,fontFamily:'Inter_400Regular',fontSize:16,minHeight:52}} /></View>;}
+export function Loading(){return <Page><ActivityIndicator accessibilityLabel="Loading"/><Copy>Loading your secure workspace…</Copy></Page>;}
+

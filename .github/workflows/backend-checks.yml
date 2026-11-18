@@ -1,0 +1,53 @@
+name: Booking backend checks
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.7.14
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm exec eslint src
+      - run: pnpm test
+      - run: deno check supabase/functions/paystack-checkout/index.ts supabase/functions/paystack-webhook/index.ts
+      - run: deno test supabase/functions/_shared/paystack_test.ts
+  deploy-production:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: booking-production
+    concurrency: booking-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.117.0
+      - name: Apply reviewed Booking migrations and functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DEPLOY_ENABLED: ${{ vars.BOOKING_PRODUCTION_DEPLOY_ENABLED }}
+        run: |
+          set -euo pipefail
+          test "$DEPLOY_ENABLED" = true
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_DB_PASSWORD"
+          supabase link --project-ref auplmtypaptzxjqeqhhf
+          supabase db push --linked
+          supabase functions deploy paystack-checkout paystack-webhook --project-ref auplmtypaptzxjqeqhhf --use-api
+          supabase migration list --linked
